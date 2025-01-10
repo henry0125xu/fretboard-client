@@ -55,6 +55,89 @@ const printArray = (values: string[], length: number): string => {
   }
 };
 
+const getFretboardRowLayout = (
+  fretboard2D: FretSummary[][],
+  row: FretSummary[],
+  rowIndex: number
+) => (
+  <div
+    key={rowIndex}
+    style={{
+      display: "flex",
+      gap: "3px",
+      borderBottom:
+        rowIndex < fretboard2D.length - 1 ? "1px solid black" : undefined,
+    }}
+  >
+    {row.map((cell, colIndex) => (
+      <div
+        key={colIndex}
+        style={{
+          width: "64px",
+          fontSize: "15px",
+          padding: "1px",
+          borderRight:
+            colIndex < row.length - 1 ? "1px solid black" : undefined,
+          backgroundColor: cell.isPressed
+            ? colIndex === 0
+              ? "lightblue"
+              : "yellow"
+            : "white",
+          textAlign: "center",
+        }}
+      >
+        <text style={{ color: colIndex === 0 ? "salmon" : "black" }}>
+          {printArray(cell.enharmonicNotes, 7)}
+        </text>
+      </div>
+    ))}
+  </div>
+);
+
+const getFretboardLayout = (
+  colHeader: number[],
+  fretboard2D: FretSummary[][]
+) => (
+  <div>
+    <div
+      style={{
+        display: "flex",
+        gap: "3px",
+      }}
+    >
+      {colHeader.map((cell, colIndex) => (
+        <div
+          key={colIndex}
+          style={{
+            width: "64px",
+            fontSize: "15px",
+            padding: "1px",
+            textAlign: "center",
+          }}
+        >
+          <text style={{ color: colIndex === 0 ? "salmon" : "black" }}>
+            {cell}
+          </text>
+        </div>
+      ))}
+    </div>
+
+    <div
+      style={{
+        display: "flex",
+        overflowY: "auto",
+        flexDirection: "column",
+        gap: "1px",
+        border: "1px solid black",
+      }}
+    >
+      {fretboard2D.map((row, rowIndex) =>
+        getFretboardRowLayout(fretboard2D, row, rowIndex)
+      )}
+    </div>
+  </div>
+);
+
 const fretboardStringtifier = (fretboard: FretboardData | null) => {
   if (!fretboard) {
     console.error("Fretboard data is null or undefined.");
@@ -64,82 +147,47 @@ const fretboardStringtifier = (fretboard: FretboardData | null) => {
   try {
     const fretboard2D = toFretboard2d(fretboard);
 
-    const header: number[] = Array.from(
+    const colHeader: number[] = Array.from(
       { length: fretboard2D[0].length },
       (_, index) => index
     );
 
+    const rowHeader: number[] = Array.from(
+      { length: fretboard2D.length },
+      (_, index) => index
+    );
+
     return (
-      <div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+        }}
+      >
         <div
           style={{
             display: "flex",
-            gap: "3px",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            marginRight: "10px",
+            marginTop: "22px",
+            gap: "1px",
           }}
         >
-          {header.map((cell, colIndex) => (
+          {rowHeader.map((_, rowIndex) => (
             <div
-              key={colIndex}
+              key={rowIndex}
               style={{
-                width: "64px",
                 fontSize: "15px",
                 padding: "1px",
                 textAlign: "center",
               }}
             >
-              <text style={{ color: colIndex === 0 ? "salmon" : "black" }}>
-                {cell}
-              </text>
+              {rowIndex}
             </div>
           ))}
         </div>
-
-        <div
-          style={{
-            display: "flex",
-            overflowY: "auto",
-            flexDirection: "column",
-            gap: "1px",
-            border: "1px solid black",
-          }}
-        >
-          {fretboard2D.map((row, rowIndex) => (
-            <div
-              key={rowIndex}
-              style={{
-                display: "flex",
-                gap: "3px",
-                borderBottom:
-                  rowIndex < fretboard2D.length - 1
-                    ? "1px solid black"
-                    : undefined,
-              }}
-            >
-              {row.map((cell, colIndex) => (
-                <div
-                  key={colIndex}
-                  style={{
-                    width: "64px",
-                    fontSize: "15px",
-                    padding: "1px",
-                    borderRight:
-                      colIndex < row.length - 1 ? "1px solid black" : undefined,
-                    backgroundColor: cell.isPressed
-                      ? colIndex === 0
-                        ? "lightblue"
-                        : "yellow"
-                      : "white",
-                    textAlign: "center",
-                  }}
-                >
-                  <text style={{ color: colIndex === 0 ? "salmon" : "black" }}>
-                    {printArray(cell.enharmonicNotes, 7)}
-                  </text>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
+        {getFretboardLayout(colHeader, fretboard2D)}
       </div>
     );
   } catch (error) {

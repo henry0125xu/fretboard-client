@@ -6,16 +6,18 @@ import fretboardStringifier from "../utils/fretboardStringifier";
 const GET_FRETBOARD_API = "http://localhost:8000/api/fretboard";
 const RESET_FRETBOARD_API = "http://localhost:8000/api/fretboard/reset";
 const PRESS_NOTES_API = "http://localhost:8000/api/fretboard/press-notes";
+const UPDATE_OPEN_STRING_API = (stringId: string) =>
+  `http://localhost:8000/api/fretboard/strings/${stringId}/open-string`;
 
 const Home = () => {
-  // State to store the fretboard data
   const [fretboard, setFretboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState("");
+  const [stringId, setStringId] = useState("");
+  const [openString, setOpenString] = useState("");
 
   // Fetch fretboard data on initial load
   useEffect(() => {
-    // Make an API call to fetch the fretboard data when the component mounts
     const fetchFretboard = async () => {
       try {
         const response = await axios.get(GET_FRETBOARD_API);
@@ -50,14 +52,25 @@ const Home = () => {
 
     try {
       const response = await axios.post(PRESS_NOTES_API, { notes: noteArray });
-      // Update the state with the updated fretboard
       setFretboard(response.data);
     } catch (error) {
       console.error("Error updating fretboard:", error);
     }
   };
 
-  // Render the fretboard
+  const updateOpenString = async () => {
+    if (!stringId || !openString) return;
+
+    try {
+      const response = await axios.put(UPDATE_OPEN_STRING_API(stringId), {
+        openString: openString,
+      });
+      setFretboard(response.data);
+    } catch (error) {
+      console.error("Error updating fretboard:", error);
+    }
+  };
+
   const renderFretboard = () => {
     if (!fretboard) return <div>No fretboard data available.</div>;
 
@@ -91,6 +104,23 @@ const Home = () => {
         Reset
       </button>
       <br />
+      <div style={{ marginTop: 15 }}>
+        <input
+          type="text"
+          value={stringId}
+          onChange={(e) => setStringId(e.target.value)}
+          placeholder="String ID"
+          style={{ width: "60px" }}
+        />
+        <input
+          type="text"
+          value={openString}
+          onChange={(e) => setOpenString(e.target.value)}
+          placeholder="Open String"
+          style={{ width: "80px" }}
+        />
+        <button onClick={updateOpenString}>Update Open String</button>
+      </div>
     </div>
   );
 };
