@@ -18,9 +18,29 @@ const Home = () => {
 
   // Fetch fretboard data on initial load
   useEffect(() => {
+    const getToken = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8000/auth/jwt/get-token"
+        );
+        const data = await response.json();
+        if (data.token) {
+          sessionStorage.setItem("jwt", data.token);
+        }
+      } catch (error) {
+        console.error("Failed to get JWT:", error);
+        return <h1>404 Not Found</h1>;
+      }
+    };
+
     const fetchFretboard = async () => {
       try {
-        const response = await axios.get(GET_FRETBOARD_API);
+        const token = sessionStorage.getItem("jwt");
+        const response = await axios.get(GET_FRETBOARD_API, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setFretboard(response.data);
         setLoading(false);
       } catch (error) {
@@ -29,7 +49,7 @@ const Home = () => {
       }
     };
 
-    fetchFretboard();
+    getToken().then(() => fetchFretboard());
   }, []);
 
   const convertCsvToArray = (csv: string): string[] => {
@@ -38,7 +58,12 @@ const Home = () => {
 
   const resetFretboard = async () => {
     try {
-      const response = await axios.post(RESET_FRETBOARD_API);
+      const token = sessionStorage.getItem("jwt");
+      const response = await axios.post(RESET_FRETBOARD_API, null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setFretboard(response.data);
     } catch (error) {
       console.error("Error updating fretboard:", error);
@@ -51,7 +76,16 @@ const Home = () => {
     const noteArray = convertCsvToArray(notes);
 
     try {
-      const response = await axios.post(PRESS_NOTES_API, { notes: noteArray });
+      const token = sessionStorage.getItem("jwt");
+      const response = await axios.post(
+        PRESS_NOTES_API,
+        { notes: noteArray },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setFretboard(response.data);
     } catch (error) {
       console.error("Error updating fretboard:", error);
@@ -62,9 +96,18 @@ const Home = () => {
     if (!stringId || !openString) return;
 
     try {
-      const response = await axios.put(UPDATE_OPEN_STRING_API(stringId), {
-        openString: openString,
-      });
+      const token = sessionStorage.getItem("jwt");
+      const response = await axios.put(
+        UPDATE_OPEN_STRING_API(stringId),
+        {
+          openString: openString,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setFretboard(response.data);
     } catch (error) {
       console.error("Error updating fretboard:", error);

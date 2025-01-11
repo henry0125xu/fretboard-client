@@ -55,6 +55,16 @@ const printArray = (values: string[], length: number): string => {
   }
 };
 
+const getColumnColor = (colIndex: number): string => {
+  if (colIndex === 0) {
+    return "salmon";
+  } else if ([3, 5, 7, 9, 12, 15, 17].includes(colIndex)) {
+    return colIndex === 12 ? "blue" : "orange";
+  } else {
+    return "black";
+  }
+};
+
 const getFretboardRowLayout = (
   fretboard2D: FretSummary[][],
   row: FretSummary[],
@@ -86,7 +96,7 @@ const getFretboardRowLayout = (
           textAlign: "center",
         }}
       >
-        <text style={{ color: colIndex === 0 ? "salmon" : "black" }}>
+        <text style={{ color: getColumnColor(colIndex) }}>
           {printArray(cell.enharmonicNotes, 7)}
         </text>
       </div>
@@ -111,11 +121,15 @@ const getFretboardLayout = (
           style={{
             width: "64px",
             fontSize: "15px",
-            padding: "1px",
+            padding: "1.5px",
             textAlign: "center",
           }}
         >
-          <text style={{ color: colIndex === 0 ? "salmon" : "black" }}>
+          <text
+            style={{
+              color: getColumnColor(colIndex),
+            }}
+          >
             {cell}
           </text>
         </div>
