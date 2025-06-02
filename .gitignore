@@ -24,10 +24,6 @@ yarn-error.log*
 # JetBrains IDE settings
 .idea/
 
-# npm configuration files (optional)
-package-lock.json
-yarn.lock
-
 # Jest test coverage reports
 coverage/
 
