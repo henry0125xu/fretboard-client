@@ -3,11 +3,14 @@ import axios from "axios";
 import fretboardStringifier from "../utils/fretboardStringifier";
 
 // Example API endpoint (adjust as needed)
-const GET_FRETBOARD_API = "http://localhost:8000/api/fretboard";
-const RESET_FRETBOARD_API = "http://localhost:8000/api/fretboard/reset";
-const PRESS_NOTES_API = "http://localhost:8000/api/fretboard/press-notes";
+const API_ROOT = "https://fretboard-server.onrender.com/api/";
+const AUTH_ROOT = "https://fretboard-server.onrender.com/auth/";
+
+const GET_FRETBOARD_API = `${API_ROOT}fretboard`;
+const RESET_FRETBOARD_API = `${API_ROOT}fretboard/reset`;
+const PRESS_NOTES_API = `${API_ROOT}fretboard/press-notes`;
 const UPDATE_OPEN_STRING_API = (stringId: string) =>
-  `http://localhost:8000/api/fretboard/strings/${stringId}/open-string`;
+  `${API_ROOT}fretboard/strings/${stringId}/open-string`;
 
 const Home = () => {
   const [fretboard, setFretboard] = useState(null);
@@ -20,9 +23,7 @@ const Home = () => {
   useEffect(() => {
     const getToken = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:8000/auth/jwt/get-token"
-        );
+        const response = await fetch(`${AUTH_ROOT}jwt/get-token`);
         const data = await response.json();
         if (data.token) {
           sessionStorage.setItem("jwt", data.token);
