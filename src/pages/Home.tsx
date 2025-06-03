@@ -120,7 +120,7 @@ const Home = () => {
 
     return (
       <div>
-        <h3>Fretboard</h3>
+        <h3>Fretboard 42554618-8fed-41e5-a919-72f738389eff</h3>
         {/* Render fretboard based on your data */}
         {/* <pre>{JSON.stringify(fretboard, null, 2)}</pre> */}
         {fretboardStringifier(fretboard)}

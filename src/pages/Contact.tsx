@@ -7,7 +7,7 @@ const Contact = () => {
   return (
     <>
       <h1>Contact Page</h1>
-      <p>You can reach us at contact@example.com</p>
+      <p>Reach me at henry0125xu@gmail.com</p>
     </>
   );
 };
